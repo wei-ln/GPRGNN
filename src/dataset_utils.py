@@ -11,7 +11,7 @@ import torch_geometric.transforms as T
 
 from cSBM_dataset import dataset_ContextualSBM
 from torch_geometric.datasets import Planetoid
-from torch_geometric.datasets import Amazon
+from torch_geometric.datasets import Amazon, Coauthor
 from torch_geometric.datasets import WikipediaNetwork
 from torch_geometric.datasets import Actor
 from torch_sparse import coalesce
@@ -160,6 +160,7 @@ class WebKB(InMemoryDataset):
     def __repr__(self):
         return '{}()'.format(self.name)
 
+root_path = '/data/lanning/data/'
 
 def DataLoader(name):
     if 'cSBM_data' in name:
@@ -169,13 +170,19 @@ def DataLoader(name):
         name = name.lower()
 
     if name in ['cora', 'citeseer', 'pubmed']:
-        root_path = '../'
+        # root_path = '../'
         path = osp.join(root_path, 'data', name)
         dataset = Planetoid(path, name, transform=T.NormalizeFeatures())
     elif name in ['computers', 'photo']:
-        root_path = '../'
+        # root_path = '../'
         path = osp.join(root_path, 'data', name)
         dataset = Amazon(path, name, T.NormalizeFeatures())
+    elif name in ['Physics', 'CS']:
+        path = osp.join(root_path,'Coauthor', name)
+        dataset = Coauthor(path, name)
+        data = dataset[0]
+        return dataset, data
+
     elif name in ['chameleon', 'squirrel']:
         # use everything from "geom_gcn_preprocess=False" and
         # only the node label y from "geom_gcn_preprocess=True"
